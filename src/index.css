@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+/* Dark mode: naka-on kapag may "dark" class ang <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Fonts na ginagamit sa buong site */
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-white font-sans text-neutral-900 antialiased;
+  @apply dark:bg-neutral-950 dark:text-neutral-100;
+}
+
+/* Circle reveal na animation ng dark mode toggle:
+   patayin ang default na fade para bilog lang ang makita */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Malaking pangalan sa hero: malapad at makapal */
+.hero-name {
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+}
+
+/* "Outline" na letters (kung gagamitin ulit) */
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 2px #1a1a1a;
+}
+.dark .text-outline {
+  -webkit-text-stroke-color: #f5f5f5;
+}
