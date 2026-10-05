@@ -1,41 +1,34 @@
-import { useRef, useState } from 'react'
-import { motion, useSpring } from 'motion/react'
-import { FiArrowUpRight, FiMail } from 'react-icons/fi'
-import { FaGithub, FaLinkedinIn, FaFacebookF } from 'react-icons/fa'
+import { useRef } from 'react'
+import { motion, useReducedMotion, useSpring } from 'motion/react'
+import { FiArrowUpRight } from 'react-icons/fi'
+import CursorLens from './CursorLens'
+import { NAME, ROLE, linkProps, socials } from '../data/profile'
+import { sectionNumber } from '../data/sections'
 
-/* ====== PALITAN MO ITO NG INFO MO ====== */
-const NAME = 'EDZEL'
-const ROLE = 'Web Developer'
-const DESCRIPTION = 'Final-year BSIT student building clean, secure, and useful web apps.'
-const HEAD_IMAGE = '/head.png' // drawing para sa light mode (public/head.png)
-const HEAD_IMAGE_DARK = '/head-inverted.png' // drawing para sa dark mode (public/head-inverted.png)
-
-const socials = [
-  { label: 'GitHub', href: 'https://github.com/', icon: <FaGithub /> },
-  { label: 'LinkedIn', href: 'https://linkedin.com/', icon: <FaLinkedinIn /> },
-  { label: 'Facebook', href: 'https://facebook.com/', icon: <FaFacebookF /> },
-  { label: 'Email', href: 'mailto:you@example.com', icon: <FiMail /> },
-]
+/* ====== PALITAN MO ITO NG INFO MO ======
+   (Pangalan, role, at social links: nasa src/data/profile.ts) */
+const DESCRIPTION = 'Fourth-year BSIT student building clean, secure, and useful web apps.'
+// Drawing ng ulo (public/head.webp). Sa dark mode, kusang binabaliktad ang kulay (CSS invert),
+// kaya isang file na lang ang kailangan.
+const HEAD_IMAGE = '/head.webp'
+const HEAD_SIZE = { width: 865, height: 770 } // totoong sukat ng image (iwas "talon" habang naglo-load)
 /* ======================================= */
 
 /* Gaano kalakas ang galaw ng ulo */
 const MAX_TILT = 18 // degrees na pag-ikot
 const MAX_SHIFT = 24 // pixels na pag-usog
 
-/* Laki ng invert lens (pixels) */
-const LENS_SIZE = 200
-
-// Helper para sa fade-up na intro animation
+// Helper para sa fade-up na animation (umuulit tuwing babalik ka sa hero)
 const fadeUp = (delay: number) => ({
   initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: false, amount: 0.3 },
   transition: { duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] as const },
 })
 
 function Hero() {
-  const sectionRef = useRef<HTMLElement>(null)
   const headRef = useRef<HTMLDivElement>(null)
-  const [showLens, setShowLens] = useState(false)
+  const reduceMotion = useReducedMotion() // naka-"reduce motion" ba ang device?
 
   // "Spring" para smooth at medyo bouncy ang pagsunod ng ulo
   const headSpring = { stiffness: 120, damping: 14, mass: 0.6 }
@@ -44,22 +37,10 @@ function Hero() {
   const moveX = useSpring(0, headSpring)
   const moveY = useSpring(0, headSpring)
 
-  // Posisyon ng lens (mas mabilis na spring para dikit sa cursor)
-  const lensSpring = { stiffness: 400, damping: 35 }
-  const lensX = useSpring(0, lensSpring)
-  const lensY = useSpring(0, lensSpring)
-
+  // ULO: lumingon papunta sa cursor (wala kung naka-reduce motion)
   function handleMouseMove(e: React.MouseEvent<HTMLElement>) {
-    const section = sectionRef.current
     const head = headRef.current
-    if (!section || !head) return
-
-    // --- LENS: ilagay ang gitna ng bilog sa cursor ---
-    const area = section.getBoundingClientRect()
-    lensX.set(e.clientX - area.left - LENS_SIZE / 2)
-    lensY.set(e.clientY - area.top - LENS_SIZE / 2)
-
-    // --- ULO: lumingon papunta sa cursor ---
+    if (!head || reduceMotion) return
     const box = head.getBoundingClientRect()
     const centerX = box.left + box.width / 2
     const centerY = box.top + box.height / 2
@@ -71,19 +52,8 @@ function Hero() {
     moveY.set(y * MAX_SHIFT * 0.5)
   }
 
-  // Pagpasok ng cursor: ilagay agad ang lens sa cursor (walang "lipad" mula sa sulok)
-  function handleMouseEnter(e: React.MouseEvent<HTMLElement>) {
-    const section = sectionRef.current
-    if (!section) return
-    const area = section.getBoundingClientRect()
-    lensX.jump(e.clientX - area.left - LENS_SIZE / 2)
-    lensY.jump(e.clientY - area.top - LENS_SIZE / 2)
-    setShowLens(true)
-  }
-
-  // Pag umalis ang cursor: itago ang lens, ibalik sa gitna ang ulo
+  // Pag umalis ang cursor: ibalik sa gitna ang ulo
   function handleMouseLeave() {
-    setShowLens(false)
     rotateY.set(0)
     rotateX.set(0)
     moveX.set(0)
@@ -92,17 +62,23 @@ function Hero() {
 
   return (
     <section
-      ref={sectionRef}
       id="home"
       onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className="relative mx-auto flex h-[calc(100svh-84px)] min-h-[560px] max-w-7xl flex-col overflow-hidden px-4 md:px-8"
     >
+      {/* Section number (kanan-taas, gaya ng ibang section) */}
+      <motion.div
+        {...fadeUp(0.1)}
+        className="flex justify-end text-sm font-semibold text-neutral-500 md:text-lg"
+      >
+        {sectionNumber('home')}
+      </motion.div>
+
       {/* Malaking pangalan */}
       <motion.h1
         {...fadeUp(0.2)}
-        className="hero-name mt-4 text-center text-[clamp(3rem,18vw,8rem)] md:mt-6 md:text-[clamp(4rem,14vw,13rem)]"
+        className="hero-name mt-1 text-center uppercase text-[clamp(3rem,18vw,8rem)] md:mt-2 md:text-[clamp(4rem,14vw,13rem)]"
       >
         {NAME}
       </motion.h1>
@@ -131,62 +107,50 @@ function Hero() {
           <li key={s.label}>
             <a
               href={s.href}
-              target="_blank"
-              rel="noreferrer"
+              {...linkProps(s.href)}
               className="flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-sm font-semibold transition hover:border-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-100"
             >
-              {s.icon} {s.label}
+              <s.icon aria-hidden /> {s.label}
             </a>
           </li>
         ))}
       </motion.ul>
 
-      {/* ULO: umaakyat mula sa baba (intro), tapos sumusunod sa cursor */}
+      {/* ULO: umaakyat mula sa baba (umuulit), lumulutang, at sumusunod sa cursor */}
       <motion.div
         initial={{ opacity: 0, y: 160 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.1, delay: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false, amount: 0.2 }}
+        transition={{ duration: 1.1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className="pointer-events-none absolute bottom-[6%] left-1/2 z-10 h-[36%] -translate-x-1/2 md:bottom-[8%] md:h-[56%]"
         style={{ perspective: 900 }}
       >
+        {/* Dahan-dahang lumulutang pataas-pababa (walang tigil) */}
         <motion.div
-          ref={headRef}
           className="h-full"
-          style={{ rotateX, rotateY, x: moveX, y: moveY, transformOrigin: '50% 80%' }}
+          animate={{ y: [0, -14, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         >
-          {/* Light mode na ulo */}
-          <img
-            src={HEAD_IMAGE}
-            alt={`Drawing of ${NAME}`}
-            className="h-full w-auto select-none object-contain object-bottom dark:hidden"
-            draggable={false}
-          />
-          {/* Dark mode na ulo (inverted) */}
-          <img
-            src={HEAD_IMAGE_DARK}
-            alt={`Drawing of ${NAME}`}
-            className="hidden h-full w-auto select-none object-contain object-bottom dark:block"
-            draggable={false}
-          />
+          <motion.div
+            ref={headRef}
+            className="h-full"
+            style={{ rotateX, rotateY, x: moveX, y: moveY, transformOrigin: '50% 80%' }}
+          >
+            {/* Iisang drawing: binabaliktad ang kulay sa dark mode (dark:invert) */}
+            <img
+              src={HEAD_IMAGE}
+              {...HEAD_SIZE}
+              alt={`Drawing of ${NAME}`}
+              fetchPriority="high"
+              className="h-full w-auto select-none object-contain object-bottom dark:invert"
+              draggable={false}
+            />
+          </motion.div>
         </motion.div>
       </motion.div>
 
-      {/* INVERT LENS: bilog na sumusunod sa cursor, binabaliktad ang kulay ng nasa ilalim */}
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute left-0 top-0 z-40 hidden rounded-full border border-white/40 shadow-[0_0_40px_rgba(0,0,0,0.15)] md:block"
-        style={{
-          width: LENS_SIZE,
-          height: LENS_SIZE,
-          x: lensX,
-          y: lensY,
-          backdropFilter: 'invert(1)',
-          WebkitBackdropFilter: 'invert(1)',
-        }}
-        initial={false}
-        animate={{ scale: showLens ? 1 : 0, opacity: showLens ? 1 : 0 }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      />
+      {/* INVERT LENS: bilog na sumusunod sa cursor (tingnan ang CursorLens.tsx) */}
+      <CursorLens />
     </section>
   )
 }

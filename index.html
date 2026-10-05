@@ -2,13 +2,38 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Edzel | Portfolio</title>
+    <title>Edzel | Web Developer</title>
+    <meta
+      name="description"
+      content="Edzel is a fourth-year BSIT student and web developer from the Philippines building clean, secure, and useful web apps."
+    />
+    <link rel="canonical" href="https://xenutheflock.github.io/" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- Icon sa browser tab at sa home screen ng phone -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Preview kapag shine-share ang link (Facebook, Messenger, LinkedIn, Discord, atbp.) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://xenutheflock.github.io/" />
+    <meta property="og:title" content="Edzel | Web Developer" />
+    <meta
+      property="og:description"
+      content="Final-year BSIT student building clean, secure, and useful web apps."
+    />
+    <meta property="og:image" content="https://xenutheflock.github.io/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Edzel, Web Developer portfolio" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Fonts: Archivo ay para lang sa malaking pangalan (lapad 125, kapal 800) kaya iyon lang ang dina-download -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Manrope:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@125,800&family=Manrope:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <!-- I-apply agad ang dark mode bago mag-load ang page (para walang "flash" ng puti) -->
@@ -18,6 +43,7 @@
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
         if (saved === 'dark' || (!saved && prefersDark)) {
           document.documentElement.classList.add('dark')
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0a0a0a')
         }
       } catch (e) {}
     </script>

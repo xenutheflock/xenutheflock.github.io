@@ -15,6 +15,8 @@ function ThemeToggle() {
   function applyTheme(next: boolean) {
     flushSync(() => setIsDark(next)) // i-update agad ang icon
     document.documentElement.classList.toggle('dark', next)
+    // Kulay ng browser bar sa phone: sumasabay sa theme
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', next ? '#0a0a0a' : '#ffffff')
     try {
       localStorage.setItem('theme', next ? 'dark' : 'light')
     } catch {
@@ -72,7 +74,7 @@ function ThemeToggle() {
       whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.9 }}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-      className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-neutral-200 bg-white text-lg transition-colors hover:border-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-100"
+      className="circle relative flex h-10 w-10 items-center justify-center overflow-hidden border"
     >
       {/* Umiikot na palit ng icon */}
       <AnimatePresence mode="wait" initial={false}>
